@@ -92,6 +92,46 @@ fn main() {
     let a_slice = &a[..5]; // &[i32]类型
     println!("a_slice: {:?}", a_slice);
 
+    // 函数传参四种方式和c++对比：复制(值传递)，所有权转移（右值引用，move），可变借用（指针），不可变借用（const 指针）
+    let mut n = 5;
+    // 复制(值传递)
+    test_param1(n);
+    println!("n value: {}", n);
+
+    // 可变借用（指针传递）
+    test_param2(&mut n);
+    println!("n value: {}", n);
+
+    // 不可变借用（const 指针）
+    test_param3(&n);
+
+    // 所有权转移(右值引用，move)
+    let mut s = String::from("sssss");
+    test_param4(s);
+    // 所有权转移，外面不能用s了
+    //println!("s value: {}", s);
+
+}
+// 虽然是mut n，但是i32实现了Copy trait，相当于c++ 值传递，不会改变外部n的值
+fn test_param1(mut n: i32) {
+    n = n + 1;
+    println!("test_param1:n value: {}", n);
+}
+
+fn test_param2(n: &mut i32) {
+    *n = *n + 1;
+    println!("test_param2:n value: {}", n);
+}
+
+fn test_param3(n: &i32) {
+    // 不可变借用，不能改变n的值，编译报错
+    //*n = *n + 1;
+    println!("test_param3:n value: {}", n);
+}
+
+fn test_param4(mut s: String) {
+    s.push_str(" hahahahha");
+    println!("test_param4:s value: {}", s);
 }
 
 fn use_string(s: String) {  // 参数为String，会发生所有权转移

@@ -87,7 +87,7 @@ fn main() {
     println!("p3.x = {}, p3.y = {}", p3.x, p3.y);
 
 
-    // trait 相当于接口
+    // trait 类似于接口
     // 定义名字为Summary的trait
     pub trait Summary {
         // trait中声明的函数，需要具体的类型自己去实现
@@ -202,5 +202,34 @@ fn main() {
     }
     */
 
-    
+    // trait继承，trait继承和c++继承不太一样，
+    // trait实际上是一种限制，trait继承是声明了此trait自动受到哪些trait的限制
+    // 实现trait时强制要求也要实现继承的trait
+
+    trait A {
+        fn a(&self);
+    }
+
+    trait B : A {
+        fn b(&self);
+    }
+
+    struct Test {
+        n: i32,
+    }
+
+    impl B for Test {
+        fn b(&self) {
+            println!("bbbbb");
+        }
+    }
+
+    // 注释掉这个实现编译不通过
+    // 上面实现了trait B，由于B继承A，所以强制也必须实现trait A
+    impl A for Test {
+        fn a(&self) {
+            println!("aaaaa");
+        }
+    }
+
 }
