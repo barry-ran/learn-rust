@@ -7,8 +7,7 @@
     其他参考：
     深入了解 Rust 异步开发模式：https://cloud.tencent.com/developer/news/686021
     Rust异步实用指南：https://blog.logrocket.com/a-practical-guide-to-async-in-rust/
-    Rust：异步代码里的阻塞：https://zhuanlan.zhihu.com/p/147995615
-    异步运行时中如何执行block任务：https://zhuanlan.zhihu.com/p/147995615
+    Rust：异步代码里的阻塞：https://zhuanlan.zhihu.com/p/147995615    
 */
 
 use futures::executor::block_on;
@@ -17,11 +16,13 @@ use std::thread;
 use tokio::prelude::*;
 use tokio::runtime;
 use tokio::task;
-use tokio::time;
+use tokio::time::sleep;
 use std::time::{Duration, Instant};
 
 async fn async_1() {
-    println!("async_1 :{:?}", thread::current().id());
+    println!("async_1 begin :{:?}", thread::current().id());
+    sleep(Duration::from_millis(5000)).await;
+    println!("async_1 end :{:?}", thread::current().id());
 }
 async fn async_2() {
     println!("async_2 :{:?}", thread::current().id());
