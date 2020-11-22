@@ -1,0 +1,20 @@
+[package]
+name = "call_winapi"
+version = "0.1.0"
+authors = ["rankun <rankun@bytedance.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+
+[target.'cfg(target_os = "windows")'.dependencies.winapi]
+version = "0.3.6"
+features = [
+    # GetSystemDefaultLCID api需要winnls feature
+    # 可以在如下网址搜索GetSystemDefaultLCID看来查看GetSystemDefaultLCID需要开哪个feature
+    # https://sourcegraph.com/github.com/retep998/winapi-rs）      
+    "winnls", 
+    # MessageBox
+    "winuser",
+]
