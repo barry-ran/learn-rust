@@ -1,6 +1,8 @@
 #[cfg(windows)] extern crate winapi;
 use std::io::Error;
 
+// https://doc.rust-lang.org/nomicon/ffi.html
+
 #[cfg(windows)]
 fn get_system_default_lcid() {
     // GetSystemDefaultLCID

@@ -1,0 +1,13 @@
+[package]
+name = "libyuv-sys"
+version = "0.1.0"
+authors = ["rankun <rankun@bytedance.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+# rust调用c库 https://doc.rust-lang.org/nomicon/ffi.html
+
+[dependencies]
+
+# bindgen使用介绍 https://rust-lang.github.io/rust-bindgen/introduction.html
+# bindgen .\src\libyuv\include\libyuv.h  --blacklist-type max_align_t -o bindings.rs
