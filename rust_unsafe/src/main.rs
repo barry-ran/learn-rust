@@ -20,6 +20,11 @@ fn main() {
     // 创建可变引用的裸指针类型
     let r2 = &mut num as *mut i32;
 
+    // 可变空指针
+    let null_mut_ptr: *mut i32 = std::ptr::null_mut();
+    // 不可变空指针
+    let null_ptr: *const i32 = std::ptr::null();
+
     unsafe {
         // 解引用访问裸指针，只能在unsafe中
         println!("r1 is: {}", *r1);
