@@ -1,0 +1,18 @@
+[package]
+name = "libvpx-sys"
+version = "0.1.0"
+authors = ["rankun <rankun@bytedance.com>"]
+edition = "2018"
+build = "build.rs"
+categories = ["multimedia::video", "multimedia::encoding", "api-bindings"]
+description = "Rust bindings to libvpx"
+links = "vpx"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[build-dependencies]
+semver-parser = "0.10.1"
+bindgen = "0.55.1"
+
+[features]
+default = []
