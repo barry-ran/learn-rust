@@ -13,7 +13,7 @@ use webm::mux::Track;
 mod convert;
 mod sound;
 
-fn main() -> io::Result<()> {
+fn main() -> io::Result<()> {        
     // 获取显示器
     let displays = Display::all()?;
 
@@ -64,30 +64,6 @@ fn main() -> io::Result<()> {
     let width = capturer.width() as u32;
     let height = capturer.height() as u32;
 
-    // 创建webm文件
-    let filename = "out.webm";
-    let out = match {
-        OpenOptions::new()
-            .write(true)
-            .create_new(true)
-            .open(filename)
-    } {
-        Ok(file) => file,
-        Err(ref e) if e.kind() == io::ErrorKind::AlreadyExists => {
-            if loop {
-                quest::ask("Overwrite the existing file? [y/N] ");
-                if let Some(b) = quest::yesno(false)? {
-                    break b;
-                }
-            } {
-                File::create(filename)?
-            } else {
-                return Ok(());
-            }
-        }
-        Err(e) => return Err(e.into()),
-    };
-
     // 创建编码器
     let vpx_codec = vpx_encode::VideoCodecId::VP9;
     let bv = 20000; // Video bitrate in kilobits per second
@@ -101,10 +77,20 @@ fn main() -> io::Result<()> {
 
     // 创建webm封装器
     let mux_codec = mux::VideoCodecId::VP9;
-    let mut webm =
-        mux::Segment::new(mux::Writer::new(out)).expect("Could not initialize the multiplexer.");
-    let mut vt = webm.add_video_track(width, height, None, mux_codec);
 
+    // 创建webm文件
+    let filename = "chunk";
+
+    let chunk_cb = |chunk_file_name: &str|{
+        println!("chunk cb: {}", chunk_file_name);
+    };
+
+    let mut writer = mux::WebmWriter::new("", filename, chunk_cb);
+    
+    let mut webm =
+        mux::Segment::new(writer).expect("Could not initialize the multiplexer.");
+    let mut vt = webm.add_video_track(width, height, None, mux_codec);
+            
     // 开始录制
     let start = Instant::now();
     let stop = Arc::new(AtomicBool::new(false));
@@ -127,9 +113,10 @@ fn main() -> io::Result<()> {
             stop.store(true, Ordering::Release);
         }
     });
+    
 
     // 录制时间
-    let duration = Some(Duration::from_secs(30));
+    let duration = Some(Duration::from_secs(180));
     
     let fps = 30;
     let spf = Duration::from_nanos(1_000_000_000 / fps);
@@ -149,7 +136,7 @@ fn main() -> io::Result<()> {
 
                 convert::argb_to_i420(width as usize, height as usize, &frame, &mut yuv);
 
-                for frame in vpx.encode(ms as i64, &yuv).unwrap() {
+                for frame in vpx.encode(ms as i64, &yuv).unwrap() {                    
                     vt.add_frame(frame.data, frame.pts as u64 * 1_000_000, frame.key);
                 }
             }

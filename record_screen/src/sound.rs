@@ -12,10 +12,10 @@ const SAMPLE_RATE: usize = 48_000;
 const FRAME_SIZE: usize = 960;
 const MAX_PACKET: usize = 4000;
 
-pub fn run<T>(
+pub fn run(
     stop: Arc<AtomicBool>,
     mic: cpal::Device,
-    webm: &mut mux::Segment<T>,
+    webm: &mut mux::Segment,
     bitrate: u32,
 ) -> Result<(), Error> {
     let fmt = mic.default_input_format()?;

@@ -10,7 +10,8 @@ edition = "2018"
 scrap = "0.5.0" # 屏幕采集
 cpal = "0.8" # 音频采集
 quest = "0.3" # 命令行处理
-webm = "1" # webm封装器
-vpx-encode = {version="0.4.1", features=["vp9"]} # vpx视频编码器
+# webm = "1" # webm封装器
+webm = {path="../webm"} # webm封装器
+vpx-encode = {path = "../vpx-encode", features=["vp9"]} # vpx视频编码器
 opus = "0.2" # opus音频编码器
 sample = "0.10"
