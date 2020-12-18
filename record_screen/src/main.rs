@@ -77,16 +77,12 @@ fn main() -> io::Result<()> {
 
     // 创建webm封装器
     let mux_codec = mux::VideoCodecId::VP9;
-
-    // 创建webm文件
     let filename = "chunk";
-
     let chunk_cb = |chunk_file_name: &str|{
         println!("chunk cb: {}", chunk_file_name);
     };
 
-    let mut writer = mux::WebmWriter::new("", filename, chunk_cb);
-    
+    let mut writer = mux::WebmWriter::new("", filename, chunk_cb);    
     let mut webm =
         mux::Segment::new(writer).expect("Could not initialize the multiplexer.");
     let mut vt = webm.add_video_track(width, height, None, mux_codec);
