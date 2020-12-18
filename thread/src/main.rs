@@ -60,11 +60,16 @@ fn main() {
             tx.send(val).unwrap();
             thread::sleep(Duration::from_secs(1));
         }
+
+        println!("wait tx destory"); 
+        thread::sleep(Duration::from_secs(5));
+        println!("destory"); 
     });
 
     // 可以通过rx.recv()接收，也可以通过迭代器（迭代器next函数里应该调用了recv）
+    // 所有tx都销毁这个for循环就会退出
     for received in rx {
-        println!("Got: {}", received);
+        println!("Got: {}", received);  
     }
 
     // mutex（和c++中的mutex有所不同，rust mutex可以带一个数据）
