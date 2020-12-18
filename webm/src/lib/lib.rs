@@ -7,7 +7,8 @@ pub mod mux {
     use std::fs::{File, OpenOptions};
     use std::path::Path;
 
-    use std::io::{Write, Seek};    
+    use std::io::{Write, Seek};   
+    use std::io; 
     
     pub struct WebmWriter
     {
@@ -33,10 +34,16 @@ pub mod mux {
             let chunk_name = format!("{}_{}.webm", base_name, chunk_count);
             let mut path = Path::new(file_path);
             let path = path.join(&chunk_name);
-            let file = Box::new(OpenOptions::new()
+            let file = Box::new(match { OpenOptions::new()
             .write(true)
             .create_new(true)
-            .open(&path).unwrap());
+            .open(&path)} {
+                Ok(file) => file,
+                Err(ref e) if e.kind() == io::ErrorKind::AlreadyExists => {
+                    File::create(&path).unwrap()
+                },
+                Err(e) => panic!(),
+            });            
 
             let mut w = Box::new(WebmWriter {                
                 webm_writer: 0 as ffi::mux::WriterMutPtr,
@@ -99,15 +106,23 @@ pub mod mux {
         fn update_chunk(&mut self) {
             let mut path = Path::new(&self.file_path);
             let path = path.join(&self.chunk_name);
-
             (self.chunk_cb)(path.to_str().unwrap());
 
             self.chunk_count = self.chunk_count + 1;
             self.chunk_name = format!("{}_{}.webm", self.base_name, self.chunk_count);
-            self.file = Box::new(OpenOptions::new()
-            .write(true)
-            .create_new(true)
-            .open(&self.chunk_name).unwrap());
+
+            let mut path = Path::new(&self.file_path);
+            let path = path.join(&self.chunk_name);
+            self.file = Box::new(match { OpenOptions::new()
+                .write(true)
+                .create_new(true)
+                .open(&path)} {
+                    Ok(file) => file,
+                    Err(ref e) if e.kind() == io::ErrorKind::AlreadyExists => {
+                        File::create(&path).unwrap()
+                    },
+                    Err(e) => panic!(),
+                });        
         }
 
         fn webm_writer(&self) -> ffi::mux::WriterMutPtr {
