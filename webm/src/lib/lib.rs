@@ -132,6 +132,10 @@ pub mod mux {
 
     impl Drop for WebmWriter {
         fn drop(&mut self) {
+            let mut path = Path::new(&self.file_path);
+            let path = path.join(&self.chunk_name);
+            (self.chunk_cb)(path.to_str().unwrap());
+            
             unsafe {
                 ffi::mux::delete_writer(self.webm_writer);
             }            
