@@ -1,0 +1,12 @@
+[package]
+name = "http_upload"
+version = "0.1.0"
+authors = ["rankun <rankun@bytedance.com>"]
+edition = "2018"
+
+# See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
+
+[dependencies]
+tokio = {version = "0.3.3", features = ["full"] }
+reqwest = "0.10"
+tokio-compat-02 = "0.1" # reqwest依赖0.2.5的tokio，使用tokio-compat-02可以将0.2.5的feature扔到0.3的runtime中运行
