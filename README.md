@@ -1,2 +1,2 @@
-# learn_rust
+# learn-rust
 自己学习rust的随手例子
