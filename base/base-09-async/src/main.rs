@@ -13,11 +13,12 @@
 use futures::executor::block_on;
 use futures::prelude::*;
 use std::thread;
-use tokio::prelude::*;
+//use tokio::prelude::*;
 use tokio::runtime;
 use tokio::task;
 use tokio::time::sleep;
 use std::time::{Duration, Instant};
+use std::pin::Pin;
 
 async fn async_1() {
     println!("async_1 begin :{:?}", thread::current().id());
@@ -84,6 +85,10 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
     Ok(())
 }
 
+// 如何让回调函数支持执行异步代码
+type SyncCallback = Box<dyn Fn(u32) -> u32>;
+type AsyncCallback = Box<dyn Fn(u32) -> Pin<Box<dyn Future<Output = u32>>>>;
+
 // tokio：使用宏简洁版本的runtime（可以通过flavor指定单线程/多线程）
 // #[tokio::main(flavor = "multi_thread", worker_threads = 10)]
 // #[tokio::main(flavor = "current_thread")]
@@ -92,6 +97,32 @@ fn main() -> Result<(), Box<dyn std::error::Error>> {
 #[tokio::main(flavor = "current_thread")]
 async fn main() {
     println!("main thread: {:?}", thread::current().id());
+
+    let sc : SyncCallback = Box::new(|num| {
+        println!("SyncCallback");
+        num
+    });
+    let n = sc(5);
+    // 普通Fn肯定不能await
+    // let n = sc(5).await.unwrap();
+    println!("sc n: {}", n);
+
+    // 在异步环境中，通过回调函数返回Future实现回调函数中可以执行异步代码
+    let ac : AsyncCallback = Box::new(|num| {
+        println!("AsyncCallback sync");
+        // 当前同步环境，不能await
+        //async_2().await;
+        async_2();
+        Box::pin(async move {
+            println!("AsyncCallback async");
+            // 异步环境可以await
+            async_2().await;
+            num
+        })
+    });
+    let n = ac(5).await;
+    println!("ac n: {}", n);
+
 
     ///
     ///     interval.tick().await;
